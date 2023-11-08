@@ -1,8 +1,6 @@
 import speech_recognition as sr
 import pyrebase
 
-count=1
-
 config = {
   "apiKey": "AIzaSyClastSM-d8sm0AWajY03OnezmkPVCrO04",
   "authDomain": "fir-topythonsample.firebaseapp.com",
@@ -20,31 +18,23 @@ database = firebase.database()
 
 recognizer = sr.Recognizer()
 
-''' recording the sound '''
-
-def main(c):
-    
-    with sr.Microphone() as source:
-        print("Adjusting noise ")
-        recognizer.adjust_for_ambient_noise(source, duration=1)
-        print("Recording for 4 seconds")
-       
-        recorded_audio = recognizer.listen(source, timeout=4) # Listening timeout error raises while waiting for the text to start
-        print("Done recording")
-      
-            
-
-    ''' Recorgnizing the Audio '''
+def re_run_program(count):
+    if(count<5):
+        print(f"Recording {count+1}")
+        record(count+1)
+    else:
+        print("Your presence undetected")  ##
+        
+def recognize_audio(recorded_audio, count):
     try:
         print("Recognizing the text")
         text = recognizer.recognize_google(
                 recorded_audio, 
                 language="en-US"
         )
-        # text="Google"
+
         print("Decoded Text : {}".format(text))
-        # x=text.split()
-        # print(x)
+
         users = database.child("Users").order_by_child("Text").equal_to(text.lower()).get()
         
         if not len(users.each()):  
@@ -53,13 +43,30 @@ def main(c):
             for user in users.each():
                 if (user.val()!=""):
                     print("Welcome, {}" .format(user.val()["Name"]))   
-
-
-        
+    except sr.exceptions.UnknownValueError:
+        re_run_program(count)
     except Exception as ex:
-        if(c<5):
-            print(f"Recording {c+1}")
-            main(c+1)
-        else:
-            print("Your presence undetected")  ##
-main(count)
+        print(ex)
+        
+    
+
+''' recording the sound '''
+
+def record(count):
+    
+    with sr.Microphone() as source:
+        print("Adjusting noise ")
+        recognizer.adjust_for_ambient_noise(source, duration=1)
+        print("Recording for 4 seconds")
+        try:
+            recorded_audio = recognizer.listen(source, timeout=4) 
+            print("Done recording")
+            recognize_audio(recorded_audio, count)
+               
+        except sr.exceptions.WaitTimeoutError:
+            re_run_program(count+1)
+            
+        except Exception as ex:
+            print(ex)
+        
+record(0)
