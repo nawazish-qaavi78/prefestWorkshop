@@ -44,6 +44,7 @@ def recognize_audio(recorded_audio, count):
                 if (user.val()!=""):
                     print("Welcome, {}" .format(user.val()["Name"]))   
     except sr.exceptions.UnknownValueError:
+        print("Couldn't comprehend. Please speak clearly")
         re_run_program(count)
     except Exception as ex:
         print(ex)
@@ -64,6 +65,7 @@ def record(count):
             recognize_audio(recorded_audio, count)
                
         except sr.exceptions.WaitTimeoutError:
+            print("Recording Time out. Please speak while recording")
             re_run_program(count+1)
             
         except Exception as ex:
