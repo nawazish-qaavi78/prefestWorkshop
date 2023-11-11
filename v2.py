@@ -19,6 +19,7 @@ database = firebase.database()
 
 recognizer = sr.Recognizer()
 
+count = 0
 
 def find_user(text):
     users = database.child("Users").order_by_child("Text").equal_to(text.lower()).get()
@@ -72,7 +73,30 @@ def record(lang_code):
               
         except Exception as ex:
             print(ex)
-        
-lang = record("en-US") 
-code_word = record(langcodes.find(lang).language)
-find_user(code_word)
+            
+def find_lang():
+    for i in range(0,3):
+        print(f"Recording {i+1}")
+        lang = record("en-US") 
+        if(lang):
+            return lang
+
+lang = find_lang()
+if(lang):
+    for i in range(0,5):
+        print(f'Recording {i+1}')
+        try: 
+            code_word = record(langcodes.find(lang).language)
+            if(code_word):
+                find_user(code_word)
+                break
+        except LookupError:
+            print("No such language found")
+            if(count<3):
+                count+=1
+                lang = find_lang()
+            else:
+                print("Language not supported")
+                break
+                
+
