@@ -29,13 +29,6 @@ def find_user(text):
         for user in users.each():
             if (user.val()!=""):
                 print("Welcome, {}" .format(user.val()["Name"]))   
-
-def re_run_program(count):
-    if(count<5):
-        print(f"Recording {count+1}")
-        record(count+1)
-    else:
-        print("Your presence undetected")  ##
         
 def recognize_audio(recorded_audio, lang_code):
     try:
