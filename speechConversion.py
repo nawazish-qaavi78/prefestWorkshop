@@ -15,7 +15,6 @@ config = {
 firebase = pyrebase.initialize_app(config)
 database = firebase.database()
 
-
 recognizer = sr.Recognizer()
 
 def re_run_program(count):
@@ -24,6 +23,16 @@ def re_run_program(count):
         record(count+1)
     else:
         print("Your presence undetected")  ##
+        
+def find_user(text):
+    users = database.child("Users").order_by_child("Text").equal_to(text.lower()).get()
+        
+    if not len(users.each()):  
+        print("User not found")  ###
+    else:
+        for user in users.each():
+            if (user.val()!=""):
+                print("Welcome, {}" .format(user.val()["Name"]))  
         
 def recognize_audio(recorded_audio, count):
     try:
@@ -34,22 +43,14 @@ def recognize_audio(recorded_audio, count):
         )
 
         print("Decoded Text : {}".format(text))
-
-        users = database.child("Users").order_by_child("Text").equal_to(text.lower()).get()
-        
-        if not len(users.each()):  
-            print("User not found")  ###
-        else:
-            for user in users.each():
-                if (user.val()!=""):
-                    print("Welcome, {}" .format(user.val()["Name"]))   
+        find_user(text)
+         
     except sr.exceptions.UnknownValueError:
         print("Couldn't comprehend. Please speak clearly")
         re_run_program(count)
     except Exception as ex:
         print(ex)
-        
-    
+           
 
 ''' recording the sound '''
 
