@@ -1,4 +1,5 @@
 import speech_recognition as sr
+import requests # for connection error
 import pyrebase
 
 config = {
@@ -25,16 +26,19 @@ def re_run_program(count):
         print("Your presence undetected")  ##
         
 def find_user(text):
-    users = database.child("Users").order_by_child("Text").equal_to(text.lower()).get()
+    try:
+        users = database.child("Users").order_by_child("Text").equal_to(text.lower()).get()
+        if not len(users.each()):  
+            print("User not found")  ###
+        else:
+            for user in users.each():
+                if (user.val()!=""):
+                    print("Welcome, {}" .format(user.key()))
+                    print(database.child("Users").child(user.key()).update({"stage1":1}))
+    except requests.exceptions.ConnectionError:
+        print("Connection Failed! Check Your Internet Connection")
         
         
-    if not len(users.each()):  
-        print("User not found")  ###
-    else:
-        for user in users.each():
-            if (user.val()!=""):
-                print("Welcome, {}" .format(user.key()))
-                print(database.child("Users").child(user.key()).update({"stage1":1}))
 def recognize_audio(recorded_audio, count):
     try:
         print("Recognizing the text")
