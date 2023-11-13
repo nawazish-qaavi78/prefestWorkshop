@@ -34,7 +34,7 @@ def find_user(text):
             for user in users.each():
                 if (user.val()!=""):
                     print("Welcome, {}" .format(user.key()))
-                    print(database.child("Users").child(user.key()).update({"stage1":1}))
+                    print(database.child("Stages").update({"stage1":1}))
     except requests.exceptions.ConnectionError:
         print("Connection Failed! Check Your Internet Connection")
         
@@ -82,7 +82,6 @@ def record(count):
             
         except Exception as ex:
             print(ex)
-            print("1")
         
 record(0)
 
