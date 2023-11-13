@@ -27,13 +27,14 @@ def re_run_program(count):
 def find_user(text):
     users = database.child("Users").order_by_child("Text").equal_to(text.lower()).get()
         
+        
     if not len(users.each()):  
         print("User not found")  ###
     else:
         for user in users.each():
             if (user.val()!=""):
-                print("Welcome, {}" .format(user.val()["Name"]))  
-        
+                print("Welcome, {}" .format(user.key()))
+                print(database.child("Users").child(user.key()).update({"stage1":1}))
 def recognize_audio(recorded_audio, count):
     try:
         print("Recognizing the text")
@@ -80,3 +81,5 @@ def record(count):
             print("1")
         
 record(0)
+
+
