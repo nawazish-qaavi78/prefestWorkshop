@@ -48,8 +48,11 @@ def recognize_audio(recorded_audio, count):
     except sr.exceptions.UnknownValueError:
         print("Couldn't comprehend. Please speak clearly")
         re_run_program(count)
+    except sr.exceptions.RequestError:
+        print("Failed!!! Please check your internet connection")
     except Exception as ex:
         print(ex)
+        print("2")
            
 
 ''' recording the sound '''
@@ -69,7 +72,11 @@ def record(count):
             print("Recording Time out. Please speak while recording")
             re_run_program(count+1)
             
+        except sr.exceptions.RequestError:
+            print("Failed!!! Please check your internet connection")
+            
         except Exception as ex:
             print(ex)
+            print("1")
         
 record(0)
