@@ -34,9 +34,11 @@ def find_user(text):
             for user in users.each():
                 if (user.val()!=""):
                     print("Welcome, {}" .format(user.key()))
-                    print(database.child("Stages").update({"stage1":1}))
+                    database.child("Stages").update({"stage1":1})
     except requests.exceptions.ConnectionError:
         print("Connection Failed! Check Your Internet Connection")
+    except Exception as ex:
+        print(ex)
         
         
 def recognize_audio(recorded_audio, count):
@@ -57,7 +59,6 @@ def recognize_audio(recorded_audio, count):
         print("Failed!!! Please check your internet connection")
     except Exception as ex:
         print(ex)
-        print("2")
            
 
 ''' recording the sound '''
