@@ -24,6 +24,7 @@ def re_run_program(count):
         record(count+1)
     else:
         print("Your presence undetected")  ##
+        return False
         
 def find_user(text):
     try:
@@ -35,10 +36,15 @@ def find_user(text):
                 if (user.val()!=""):
                     print("Welcome, {}" .format(user.key()))
                     database.child("Stages").update({"stage1":1})
+                    return True
+            return False
     except requests.exceptions.ConnectionError:
         print("Connection Failed! Check Your Internet Connection")
+        return False
     except Exception as ex:
         print(ex)
+        return False
+    
         
         
 def recognize_audio(recorded_audio, count):
@@ -50,15 +56,17 @@ def recognize_audio(recorded_audio, count):
         )
 
         print("Decoded Text : {}".format(text))
-        find_user(text)
+        return find_user(text)
          
     except sr.exceptions.UnknownValueError:
         print("Couldn't comprehend. Please speak clearly")
         re_run_program(count)
     except sr.exceptions.RequestError:
         print("Failed!!! Please check your internet connection")
+        return False
     except Exception as ex:
         print(ex)
+        return False
            
 
 ''' recording the sound '''
@@ -72,7 +80,7 @@ def record(count):
         try:
             recorded_audio = recognizer.listen(source, timeout=4) 
             print("Done recording")
-            recognize_audio(recorded_audio, count)
+            return recognize_audio(recorded_audio, count)
                
         except sr.exceptions.WaitTimeoutError:
             print("Recording Time out. Please speak while recording")
@@ -80,10 +88,13 @@ def record(count):
             
         except sr.exceptions.RequestError:
             print("Failed!!! Please check your internet connection")
+            return False
             
         except Exception as ex:
             print(ex)
+            return False
         
-record(0)
+
+
 
 
