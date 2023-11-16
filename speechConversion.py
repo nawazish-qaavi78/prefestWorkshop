@@ -19,18 +19,21 @@ database = firebase.database()
 recognizer = sr.Recognizer()
 
 def re_run_program(count):
-    if(count<5):
-        print(f"Recording {count+1}")
+    if(count<4):
+        print("Recording")
         record(count+1)
     else:
         print("Your presence undetected")  ##
+        database.child("Stages").update({"stage1":-2})
         return False
         
-def find_user(text):
+def find_user(text, count):
     try:
         users = database.child("Users").order_by_child("Text").equal_to(text.lower()).get()
         if not len(users.each()):  
             print("User not found")  ###
+            database.child("Stages").update({"stage1":-1})
+            re_run_program(count)
         else:
             for user in users.each():
                 if (user.val()!=""):
@@ -56,7 +59,7 @@ def recognize_audio(recorded_audio, count):
         )
 
         print("Decoded Text : {}".format(text))
-        return find_user(text)
+        return find_user(text, count)
          
     except sr.exceptions.UnknownValueError:
         print("Couldn't comprehend. Please speak clearly")
@@ -84,7 +87,7 @@ def record(count):
                
         except sr.exceptions.WaitTimeoutError:
             print("Recording Time out. Please speak while recording")
-            re_run_program(count+1)
+            re_run_program(count)
             
         except sr.exceptions.RequestError:
             print("Failed!!! Please check your internet connection")
@@ -93,6 +96,7 @@ def record(count):
         except Exception as ex:
             print(ex)
             return False
-
-# record(0)
         
+
+
+
