@@ -3,16 +3,28 @@ import cv2
 import numpy as np
 import os
 import pyrebase
+import time
+
+# config = {
+#   "apiKey": "AIzaSyClastSM-d8sm0AWajY03OnezmkPVCrO04",
+#   "authDomain": "fir-topythonsample.firebaseapp.com",
+#   "projectId": "fir-topythonsample",
+#   "storageBucket": "fir-topythonsample.appspot.com",
+#   "databaseURL":"https://fir-topythonsample-default-rtdb.asia-southeast1.firebasedatabase.app/",
+#   "messagingSenderId": "936536554705",
+#   "appId": "1:936536554705:web:f4d0b91b36e8174d7e99f0",
+#   "measurementId": "G-JL324VD9EC"
+# }
 
 config = {
-  "apiKey": "AIzaSyClastSM-d8sm0AWajY03OnezmkPVCrO04",
-  "authDomain": "fir-topythonsample.firebaseapp.com",
-  "projectId": "fir-topythonsample",
-  "storageBucket": "fir-topythonsample.appspot.com",
-  "databaseURL":"https://fir-topythonsample-default-rtdb.asia-southeast1.firebasedatabase.app/",
-  "messagingSenderId": "936536554705",
-  "appId": "1:936536554705:web:f4d0b91b36e8174d7e99f0",
-  "measurementId": "G-JL324VD9EC"
+  "apiKey": "AIzaSyBuDXmTP1Y2WUsrSWMulqjXAznohs4sYms",
+  "authDomain": "test-project-1-1adb4.firebaseapp.com",
+  "databaseURL": "https://test-project-1-1adb4-default-rtdb.asia-southeast1.firebasedatabase.app",
+  "projectId": "test-project-1-1adb4",
+  "storageBucket": "test-project-1-1adb4.appspot.com",
+  "messagingSenderId": "184732480902",
+  "appId": "1:184732480902:web:89644a1b756327b922a807",
+  "measurementId": "G-96L7E58EF7"
 }
 
 firebase = pyrebase.initialize_app(config)
@@ -37,13 +49,13 @@ def load_known_faces(DIR, people):
 
     return known_face_encodings, known_faces
 
-def recognize_faces(video_capture, known_face_encodings, known_faces):
+def recognize_faces(video_capture, known_face_encodings, known_faces, duration):
     k=[]
     face_locations = []
     face_encodings = []
     face_names = []
     process_this_frame = True
-
+    start_time = time.time()
     while True:
         ret, frame = video_capture.read()
         if process_this_frame:
@@ -58,12 +70,16 @@ def recognize_faces(video_capture, known_face_encodings, known_faces):
             cv2.imshow("video", frame)
 
         process_this_frame = not process_this_frame
-        if cv2.waitKey(1) & 0xFF == ord("q"):
+        elapsed_time = time.time() - start_time
+        if elapsed_time >= duration:
             break
-
+        key = cv2.waitKey(1) & 0xFF
+        if key == ord('q'):
+            break
     video_capture.release()
     cv2.destroyAllWindows()
     return k
+
 def match_faces(known_face_encodings, face_encodings, known_faces):
     matches = []
     confidence_scores = []
@@ -95,18 +111,29 @@ def display_results(frame, face_locations, matches, confidence_scores):
         cv2.putText(frame, f"{confidence_score:.2f}", (left - 100, bottom + 100), font, 1.0, (255, 255, 255), 1)
         a.append(confidence_score)
     return a
-def main():
+
+def main(count):
     x=[]
     video_capture = cv2.VideoCapture(0)
     people = ["bose", "ganesh", "varun", "yash"]
     DIR = r"C:\Users\thirn\OneDrive\Desktop\face"
 
     known_face_encodings, known_faces = load_known_faces(DIR, people)
-    x=recognize_faces(video_capture, known_face_encodings, known_faces)
+    x=recognize_faces(video_capture, known_face_encodings, known_faces, 90)
     avg_confidence=sum(x)/len(x)
-    if(avg_confidence>=0.65):
+    if(avg_confidence>=0.6):
         database.child("Stages").update({"stage2":1})
         print("working")
+        print("Stage 2 passed")
+        return True
     else:
         print("Invalid User!")
-    
+        print("Stage 2 failed. Try again")
+        # database.child("Stages").update({"stage2":-1})
+
+        # if(count<2):
+        #     main(count+1)
+        # else:
+        #    database.child("Stages").update({"stage2":-2}) 
+        #    return
+        return False
