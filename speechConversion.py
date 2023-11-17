@@ -2,15 +2,26 @@ import speech_recognition as sr
 import requests # for connection error
 import pyrebase
 
+# config = {
+#   "apiKey": "AIzaSyClastSM-d8sm0AWajY03OnezmkPVCrO04",
+#   "authDomain": "fir-topythonsample.firebaseapp.com",
+#   "projectId": "fir-topythonsample",
+#   "storageBucket": "fir-topythonsample.appspot.com",
+#   "databaseURL":"https://fir-topythonsample-default-rtdb.asia-southeast1.firebasedatabase.app/",
+#   "messagingSenderId": "936536554705",
+#   "appId": "1:936536554705:web:f4d0b91b36e8174d7e99f0",
+#   "measurementId": "G-JL324VD9EC"
+# }
+
 config = {
-  "apiKey": "AIzaSyClastSM-d8sm0AWajY03OnezmkPVCrO04",
-  "authDomain": "fir-topythonsample.firebaseapp.com",
-  "projectId": "fir-topythonsample",
-  "storageBucket": "fir-topythonsample.appspot.com",
-  "databaseURL":"https://fir-topythonsample-default-rtdb.asia-southeast1.firebasedatabase.app/",
-  "messagingSenderId": "936536554705",
-  "appId": "1:936536554705:web:f4d0b91b36e8174d7e99f0",
-  "measurementId": "G-JL324VD9EC"
+  "apiKey": "AIzaSyBuDXmTP1Y2WUsrSWMulqjXAznohs4sYms",
+  "authDomain": "test-project-1-1adb4.firebaseapp.com",
+  "databaseURL": "https://test-project-1-1adb4-default-rtdb.asia-southeast1.firebasedatabase.app",
+  "projectId": "test-project-1-1adb4",
+  "storageBucket": "test-project-1-1adb4.appspot.com",
+  "messagingSenderId": "184732480902",
+  "appId": "1:184732480902:web:89644a1b756327b922a807",
+  "measurementId": "G-96L7E58EF7"
 }
 
 firebase = pyrebase.initialize_app(config)
@@ -19,8 +30,8 @@ database = firebase.database()
 recognizer = sr.Recognizer()
 
 def re_run_program(count):
-    if(count<4):
-        print("Recording")
+    if(count<2):
+        print(f"Recording {count+1}")
         record(count+1)
     else:
         print("Your presence undetected")  ##
@@ -40,7 +51,7 @@ def find_user(text, count):
                     print("Welcome, {}" .format(user.key()))
                     database.child("Stages").update({"stage1":1})
                     return True
-            return False
+            
     except requests.exceptions.ConnectionError:
         print("Connection Failed! Check Your Internet Connection")
         return False
@@ -87,7 +98,7 @@ def record(count):
                
         except sr.exceptions.WaitTimeoutError:
             print("Recording Time out. Please speak while recording")
-            re_run_program(count)
+            re_run_program(count+1)
             
         except sr.exceptions.RequestError:
             print("Failed!!! Please check your internet connection")
@@ -96,7 +107,6 @@ def record(count):
         except Exception as ex:
             print(ex)
             return False
+
+# record(0)
         
-
-record(0)
-
