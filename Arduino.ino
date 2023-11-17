@@ -8,14 +8,15 @@
 // Set these to run example.
 #define FIREBASE_HOST "fir-topythonsample-default-rtdb.asia-southeast1.firebasedatabase.app"
 #define FIREBASE_AUTH "ileju45ONNG2VSywdo0Iv5xU4sPkaKKvmphJzvGE"
-#define WIFI_SSID "iQOO Z3 5G"
-#define WIFI_PASSWORD "12345678"
+#define WIFI_SSID "Redmi 8"
+#define WIFI_PASSWORD "siva1234"
 
 /*STATE 0-SPEECH RECOGNITION FAILED
   STATE 1-SPEECH RECOGNITION PASSED
   STATE 2-SPEECH DETECTION PASSED AND FACE DETECTION FAILED
   STATE 3-BOTH SPEECH RECOGNITON AND FACE DETECTION PASSED
 */
+
 Servo servo;
 int led=13;
 int state=0;
@@ -50,26 +51,25 @@ void setup() {
 
 void loop()
 {
-//     Firebase.setBool(Data,"/NewInst",false) ? NULL : Serial.println(Data.errorReason());  
-  //bool received = Firebase.getBool(Data, "/NewInst") ? Data.to<bool>() ? true : false : Serial.println(Data.errorReason());
+
   int stage1 = Firebase.getInt(Data, "Stages/stage1") ? Data.to<int>() : Serial.println(Data.errorReason());
   int stage2 = Firebase.getInt(Data, "Stages/stage2") ? Data.to<int>() : Serial.println(Data.errorReason());
-  //int stage1 = 1;
-  //int stage2 = 0;
+
   Serial.print("STAGE 1=");
   Serial.println(stage1);
   Serial.print("STAGE 2=");
   Serial.println(stage2);
   if(stage1==0 && stage2==0){
     state=0;
+    //TURNS THE LED RED
     digitalWrite(16,HIGH);  
     digitalWrite(5,LOW);  
     digitalWrite(4,HIGH); 
     servo.write(0);
   }
-  if(stage1==1 && stage2==0){
+  else if(stage1==1 && stage2==0){
     state=1;
-    //
+    //TURNS THE LED BLUE
     digitalWrite(16,LOW);  
     digitalWrite(5,HIGH);  
     digitalWrite(4,HIGH); 
@@ -77,7 +77,7 @@ void loop()
 
     
   }
-  if(stage1==1 && stage2==1){
+  else if(stage1==1 && stage2==1){
     state=2;
     //green
     digitalWrite(16,HIGH);  
@@ -85,12 +85,12 @@ void loop()
     digitalWrite(4,LOW);  
     servo.write(90);
   }
-  else{
+  else
     //digitalWrite(16,HIGH);  
     //digitalWrite(5,HIGH);  
     //digitalWrite(4,HIGH);
     Serial.println("INVALID");
   }
-  delay(1000);
+  delay(5000);
 
 }
